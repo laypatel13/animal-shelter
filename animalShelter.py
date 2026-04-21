@@ -34,13 +34,23 @@ class Animal:
         return self.__id
 
 class Dog(Animal):
-    pass
+    def __init__(self, name, age, breed):
+        super().__init__(name, age, breed)
+    def speak(self):
+        print('Woof!!!')
 
 class Cat(Animal):
-    pass
+    def __init__(self, name, age, breed):
+        super().__init__(name, age, breed)
+    def speak(self):
+        print('Meow!!!')
+
 
 class Parrot(Animal):
-    pass
+    def __init__(self, name, age, breed):
+        super().__init__(name, age, breed)
+    def speak(self):
+        print('Mimicking!!!')
 
 
 class Shelter:
