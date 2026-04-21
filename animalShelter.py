@@ -129,3 +129,35 @@ class Shelter:
                         animal = Parrot(animal_dict["name"], animal_dict["age"], animal_dict["breed"])
                     animal.is_adopted = animal_dict["is_adopted"]
                     self.animals.append(animal)
+
+def main():
+    shelter = Shelter()
+    shelter.load()
+
+    while True:
+        print("\n--- Animal Shelter ---")
+        print("1. Add animal")
+        print("2. View all animals")
+        print("3. View by type")
+        print("4. Mark as adopted")
+        print("5. Quit")
+
+        choice = input("Enter choice: ")
+
+        if choice == "1":
+            shelter.add_animal()
+            shelter.save()
+        elif choice == "2":
+            shelter.view_all()
+        elif choice == "3":
+            shelter.view_by_type()
+        elif choice == "4":
+            shelter.mark_adopted()
+            shelter.save()
+        elif choice == "5":
+            print("Bye!")
+            break
+        else:
+            print("Invalid choice!")
+
+main()
