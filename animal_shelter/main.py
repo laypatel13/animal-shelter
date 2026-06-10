@@ -1,6 +1,11 @@
 import json
 import os
 import random
+from colorama import init, Fore, Back, Style
+from tabulate import tabulate
+
+init(autoreset=True)
+
 
 class Animal:
     def __init__(self, name, age, breed):
@@ -11,14 +16,14 @@ class Animal:
         self.__id = random.randint(1000, 9999)
 
     def display(self):
-        status = "Adopted" if self.is_adopted else "Not adopted"
-        print(f'ID: {self.__id} | Name: {self.name} | Age: {self.age} | Breed: {self.breed} | Status: {status}')
+        status = "Adopted" if self.is_adopted else "Not Adopted"
+        return [self.__id, self.name, self.age, self.breed, type(self).__name__, status]
 
     def mark_as_adopted(self):
         self.is_adopted = True
 
     def speak(self):
-        print('Some sound!')
+        print(Fore.WHITE + "Some sound!" + Style.RESET_ALL)
 
     def to_dict(self):
         return {
@@ -33,24 +38,29 @@ class Animal:
     def get_id(self):
         return self.__id
 
+
 class Dog(Animal):
     def __init__(self, name, age, breed):
         super().__init__(name, age, breed)
+
     def speak(self):
-        print('Woof!!!')
+        print(Fore.YELLOW + Style.BRIGHT + "Woof!!!" + Style.RESET_ALL)
+
 
 class Cat(Animal):
     def __init__(self, name, age, breed):
         super().__init__(name, age, breed)
+
     def speak(self):
-        print('Meow!!!')
+        print(Fore.CYAN + Style.BRIGHT + "Meow!!!" + Style.RESET_ALL)
 
 
 class Parrot(Animal):
     def __init__(self, name, age, breed):
         super().__init__(name, age, breed)
+
     def speak(self):
-        print('Mimicking!!!')
+        print(Fore.GREEN + Style.BRIGHT + "Mimicking!!!" + Style.RESET_ALL)
 
 
 class Shelter:
@@ -58,10 +68,10 @@ class Shelter:
         self.animals = []
 
     def add_animal(self):
-        type_choice = input("What type of animal (Dog, Cat, Parrot): ")
-        name = input(f"What is the name of {type_choice}: ")
-        age = input(f"Enter the age of {name}: ")
-        breed = input(f"Enter the breed of {type_choice}: ")
+        type_choice = input(Fore.WHITE + Style.NORMAL + "Enter Animal Type (Dog, Cat, Parrot): " + Style.RESET_ALL)
+        name = input(Fore.WHITE + Style.NORMAL + f"Enter Name Of {type_choice}: " + Style.RESET_ALL)
+        age = input(Fore.WHITE + Style.NORMAL + f"Enter Age Of {name}: " + Style.RESET_ALL)
+        breed = input(Fore.WHITE + Style.NORMAL + f"Enter Breed Of {type_choice}: " + Style.RESET_ALL)
 
         if type_choice.upper() == "DOG":
             animal = Dog(name, age, breed)
@@ -70,79 +80,97 @@ class Shelter:
         elif type_choice.upper() == "PARROT":
             animal = Parrot(name, age, breed)
         else:
-            print("Invalid choice!")
+            print(Fore.RED + Style.BRIGHT + "Invalid Animal Type!" + Style.RESET_ALL)
             return
 
         self.animals.append(animal)
-        print(f"{name} added to shelter!")
+        print(Fore.GREEN + Back.BLACK + Style.BRIGHT + f"{name} Added To Shelter Successfully!" + Style.RESET_ALL)
 
     def view_all(self):
         if not self.animals:
-            print("There are no animals.")
-        else:
-            for animal in self.animals:
-                animal.display()
+            print(Fore.WHITE + Back.BLACK + Style.BRIGHT + "No Animals In Shelter." + Style.RESET_ALL)
+            return
+
+        print("\n" + Fore.BLACK + Back.WHITE + "--- All Animals ---" + Style.RESET_ALL)
+        table_data = [animal.display() for animal in self.animals]
+        headers = [Style.BRIGHT + h + Style.RESET_ALL for h in ["ID", "Name", "Age", "Breed", "Type", "Status"]]
+        print(tabulate(table_data, headers=headers, tablefmt="pretty", disable_numparse=True))
 
     def view_by_type(self):
-        type_choice = input("What type of animal (Dog, Cat, Parrot): ")
-        if not self.animals:
-            print("There are no animals!")
+        type_choice = input(Fore.WHITE + Style.NORMAL + "Enter Animal Type (Dog, Cat, Parrot): " + Style.RESET_ALL)
+
+        filtered = [a for a in self.animals if type(a).__name__.upper() == type_choice.upper()]
+
+        if not filtered:
+            print(Fore.WHITE + Back.BLACK + Style.BRIGHT + f"No {type_choice} Found In Shelter." + Style.RESET_ALL)
             return
-        found = False
-        for animal in self.animals:
-            if type_choice.upper() == type(animal).__name__.upper():
-                animal.display()
-                found = True
-        if not found:
-            print(f"No {type_choice} found in shelter!")
+
+        print("\n" + Fore.BLACK + Back.WHITE + f"--- {type_choice.capitalize()}s In Shelter ---" + Style.RESET_ALL)
+        table_data = [animal.display() for animal in filtered]
+        headers = [Style.BRIGHT + h + Style.RESET_ALL for h in ["ID", "Name", "Age", "Breed", "Type", "Status"]]
+        print(tabulate(table_data, headers=headers, tablefmt="pretty", disable_numparse=True))
 
     def mark_adopted(self):
+        if not self.animals:
+            print(Fore.WHITE + Back.BLACK + Style.BRIGHT + "No Animals Available." + Style.RESET_ALL)
+            return
+
         self.view_all()
-        animal_id = int(input("Enter the ID of the animal to adopt: "))
-        for animal in self.animals:
-            if animal.get_id() == animal_id:
-                animal.mark_as_adopted()
-                print(f"{animal.name} has been adopted!")
-                return
-        print("Animal not found!")
+
+        try:
+            animal_id = int(input("\n" + Fore.CYAN + Style.BRIGHT + "Enter Animal ID To Mark As Adopted: " + Style.RESET_ALL))
+            for animal in self.animals:
+                if animal.get_id() == animal_id:
+                    animal.mark_as_adopted()
+                    print(Fore.GREEN + Back.BLACK + Style.BRIGHT + f"{animal.name} Has Been Adopted!" + Style.RESET_ALL)
+                    return
+            print(Fore.RED + Style.BRIGHT + "Animal ID Not Found!" + Style.RESET_ALL)
+        except ValueError:
+            print(Fore.RED + Style.BRIGHT + "Please Enter A Valid Number." + Style.RESET_ALL)
 
     def save(self):
-        animals_data = []
-        for animal in self.animals:
-            animals_data.append(animal.to_dict())
-        with open("animals.json", "w") as f:
-            json.dump(animals_data, f)
+        try:
+            with open("animals.json", "w") as f:
+                json.dump([animal.to_dict() for animal in self.animals], f)
+        except IOError as e:
+            print(Fore.WHITE + Back.RED + f"Fatal Error: Failed To Save Animals. {e}" + Style.RESET_ALL)
 
     def load(self):
         if os.path.exists("animals.json"):
-            with open("animals.json", "r") as f:
-                content = f.read()
-                if content.strip() == "":
-                    return
-                animals_data = json.loads(content)
-                for animal_dict in animals_data:
-                    if animal_dict["type"] == "Dog":
-                        animal = Dog(animal_dict["name"], animal_dict["age"], animal_dict["breed"])
-                    elif animal_dict["type"] == "Cat":
-                        animal = Cat(animal_dict["name"], animal_dict["age"], animal_dict["breed"])
-                    elif animal_dict["type"] == "Parrot":
-                        animal = Parrot(animal_dict["name"], animal_dict["age"], animal_dict["breed"])
-                    animal.is_adopted = animal_dict["is_adopted"]
-                    self.animals.append(animal)
+            try:
+                with open("animals.json", "r") as f:
+                    content = f.read()
+                    if content.strip() == "":
+                        return
+                    animals_data = json.loads(content)
+                    for animal_dict in animals_data:
+                        if animal_dict["type"] == "Dog":
+                            animal = Dog(animal_dict["name"], animal_dict["age"], animal_dict["breed"])
+                        elif animal_dict["type"] == "Cat":
+                            animal = Cat(animal_dict["name"], animal_dict["age"], animal_dict["breed"])
+                        elif animal_dict["type"] == "Parrot":
+                            animal = Parrot(animal_dict["name"], animal_dict["age"], animal_dict["breed"])
+                        else:
+                            continue
+                        animal.is_adopted = animal_dict["is_adopted"]
+                        self.animals.append(animal)
+            except (json.JSONDecodeError, IOError) as e:
+                print(Fore.WHITE + Back.RED + f"Fatal Error: Failed To Load Animals. {e}" + Style.RESET_ALL)
+
 
 def main():
     shelter = Shelter()
     shelter.load()
 
     while True:
-        print("\n--- Animal Shelter ---")
-        print("1. Add animal")
-        print("2. View all animals")
-        print("3. View by type")
-        print("4. Mark as adopted")
-        print("5. Quit")
+        print("\n" + Fore.BLACK + Back.WHITE + "--- Animal Shelter ---" + Style.RESET_ALL)
+        print(Fore.YELLOW + Style.NORMAL + "(1) Add New Animal" + Style.RESET_ALL)
+        print(Fore.YELLOW + Style.NORMAL + "(2) View All Animals" + Style.RESET_ALL)
+        print(Fore.YELLOW + Style.NORMAL + "(3) View Animals By Type" + Style.RESET_ALL)
+        print(Fore.YELLOW + Style.NORMAL + "(4) Mark Animal As Adopted" + Style.RESET_ALL)
+        print(Fore.YELLOW + Style.NORMAL + "(5) Quit Animal Shelter" + Style.RESET_ALL)
 
-        choice = input("Enter choice: ")
+        choice = input("\n" + Fore.CYAN + Style.BRIGHT + "Enter Your Choice: " + Style.RESET_ALL)
 
         if choice == "1":
             shelter.add_animal()
@@ -155,9 +183,11 @@ def main():
             shelter.mark_adopted()
             shelter.save()
         elif choice == "5":
-            print("Bye!")
+            print(Fore.WHITE + Style.BRIGHT + "Bye! Thanks For Using The Animal Shelter!" + Style.RESET_ALL)
             break
         else:
-            print("Invalid choice!")
+            print(Fore.RED + Style.BRIGHT + "Invalid Choice, Try Again!" + Style.RESET_ALL)
 
-main()
+
+if __name__ == "__main__":
+    main()
