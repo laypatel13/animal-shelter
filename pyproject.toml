@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "laypatel13-animal-shelter"
+version = "0.1.0"
+description = "A colorful CLI animal shelter manager for tracking and adopting animals"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Lay Patel", email = "lay.patel.1313@gmail.com"}
+]
+keywords = ["cli", "animal", "shelter", "adoption", "manager"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Environment :: Console",
+]
+dependencies = [
+    "colorama==0.4.6",
+    "tabulate>=0.9.0",
+]
+
+[project.scripts]
+animal-shelter = "animal_shelter.main:main"
+
+[project.urls]
+Homepage = "https://github.com/laypatel13/animal-shelter"
