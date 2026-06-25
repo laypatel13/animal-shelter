@@ -65,3 +65,6 @@ animal-shelter/
 
 - Used [Colorama](https://pypi.org/project/colorama/) for colored terminal output.
 - Used [Tabulate](https://pypi.org/project/tabulate/) for formatted table display.
+---
+
+>Note: This repository is the example why you should not use ```git push --force``` and rebase commands without proper knowledge.😭
